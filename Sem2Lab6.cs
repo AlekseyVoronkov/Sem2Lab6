@@ -3,48 +3,48 @@ namespace ConsoleApp5
 
     class SquareMatrix
     {
-        public int[,] matrix;
-        public int size;
+        public int[,] Matrix;
+        public int Size;
 
         public SquareMatrix()
         {
             Random random = new Random();
-            size = random.Next(2, 10);
-            matrix = new int[size, size];
+            Size = random.Next(2, 10);
+            Matrix = new int[Size, Size];
 
-            for (int RowIndex = 0; RowIndex < size; ++RowIndex)
+            for (int rowIndex = 0; rowIndex < Size; ++rowIndex)
             {
-                for (int ColumnIndex = 0; ColumnIndex < size; ++ColumnIndex)
+                for (int columnIndex = 0; columnIndex < Size; ++columnIndex)
                 {
-                    matrix[RowIndex, ColumnIndex] = random.Next(1, 10);
+                    Matrix[rowIndex, columnIndex] = random.Next(1, 10);
                 }
             }
         }
 
         public SquareMatrix(int size)
         {
-            this.size = size;
+            this.Size = size;
             Random random = new Random();
-            matrix = new int[size, size];
+            Matrix = new int[size, size];
 
-            for (int RowIndex = 0; RowIndex < size; ++RowIndex)
+            for (int rowIndex = 0; rowIndex < size; ++rowIndex)
             {
-                for (int ColumnIndex = 0; ColumnIndex < size; ++ColumnIndex)
+                for (int columnIndex = 0; columnIndex < size; ++columnIndex)
                 {
-                    matrix[RowIndex, ColumnIndex] = random.Next(1, 10);
+                    Matrix[rowIndex, columnIndex] = random.Next(1, 10);
                 }
             }
         }
 
         public static SquareMatrix operator +(SquareMatrix matrix1, SquareMatrix matrix2)
         {
-            SquareMatrix result = new SquareMatrix(matrix1.matrix.GetLength(0));
+            SquareMatrix result = new SquareMatrix(matrix1.Matrix.GetLength(0));
 
-            for (int rowIndex = 0; rowIndex < matrix1.matrix.GetLength(0); ++rowIndex)
+            for (int rowIndex = 0; rowIndex < matrix1.Matrix.GetLength(0); ++rowIndex)
             {
-                for (int columnIndex = 0; columnIndex < matrix1.matrix.GetLength(1); ++columnIndex)
+                for (int columnIndex = 0; columnIndex < matrix1.Matrix.GetLength(1); ++columnIndex)
                 {
-                    result.matrix[rowIndex, columnIndex] = matrix1.matrix[rowIndex, columnIndex] + matrix2.matrix[rowIndex, columnIndex];
+                    result.Matrix[rowIndex, columnIndex] = matrix1.Matrix[rowIndex, columnIndex] + matrix2.Matrix[rowIndex, columnIndex];
                 }
             }
 
@@ -53,16 +53,16 @@ namespace ConsoleApp5
 
         public static SquareMatrix operator *(SquareMatrix matrix1, SquareMatrix matrix2)
         {
-            int size = matrix1.matrix.GetLength(0);
+            int size = matrix1.Matrix.GetLength(0);
             SquareMatrix result = new SquareMatrix(size);
 
             for (int rowIndex = 0; rowIndex < size; ++rowIndex)
             {
                 for (int columnIndex = 0; columnIndex < size; ++columnIndex)
                 {
-                    for (int anotherIndexIDK = 0; anotherIndexIDK < size; anotherIndexIDK++)
+                    for (int anotherIndexIDK = 0; anotherIndexIDK < size; ++anotherIndexIDK)
                     {
-                        result.matrix[rowIndex, columnIndex] += matrix1.matrix[rowIndex, anotherIndexIDK] * matrix2.matrix[anotherIndexIDK, columnIndex];
+                        result.Matrix[rowIndex, columnIndex] += matrix1.Matrix[rowIndex, anotherIndexIDK] * matrix2.Matrix[anotherIndexIDK, columnIndex];
                     }
                 }
             }
@@ -72,19 +72,19 @@ namespace ConsoleApp5
 
         public SquareMatrix GetStepaMatrix(int row, int column)
         {
-            SquareMatrix result = new SquareMatrix(size - 1);
+            SquareMatrix result = new SquareMatrix(Size - 1);
 
-            for (int columnIndex = 0; columnIndex < size - 1; ++columnIndex)
+            for (int columnIndex = 0; columnIndex < Size - 1; ++columnIndex)
             {
-                for (int rowIndex = 0; rowIndex < size - 1; ++rowIndex)
+                for (int rowIndex = 0; rowIndex < Size - 1; ++rowIndex)
                 {
-                    result.matrix[rowIndex, columnIndex] = columnIndex < column ?
+                    result.Matrix[rowIndex, columnIndex] = columnIndex < column ?
                         rowIndex < row ?
-                        matrix[rowIndex, columnIndex] :
-                        matrix[rowIndex + 1, columnIndex] :
+                        Matrix[rowIndex, columnIndex] :
+                        Matrix[rowIndex + 1, columnIndex] :
                         rowIndex < row ?
-                        matrix[rowIndex, columnIndex + 1] :
-                        matrix[rowIndex + 1, columnIndex + 1];
+                        Matrix[rowIndex, columnIndex + 1] :
+                        Matrix[rowIndex + 1, columnIndex + 1];
                 }
             }
 
@@ -95,28 +95,46 @@ namespace ConsoleApp5
         {
             int trace = 0;
 
-            for (int index = 0; index < size; ++index)
+            for (int index = 0; index < Size; ++index)
             {
-                trace += matrix[index, index];
+                trace += Matrix[index, index];
             }
 
             return trace;
         }
 
+        public SquareMatrix FindDiagonal(SquareMatrix matrix1)
+        {
+            var result = matrix1;
+
+            for (int rowIndex = 0; rowIndex < matrix1.Size; ++rowIndex) 
+            {
+                for (int columnIndex = 0; columnIndex < matrix1.Size; ++columnIndex)
+                {
+                    if (rowIndex != columnIndex)
+                    {
+                        result.Matrix[rowIndex, columnIndex] = 0;
+                    }
+                }
+            }
+
+            return result;
+        }
+
         public int FindDeterminant()
         {
-            if (size == 2)
+            if (Size == 2)
             {
-                int determinant = matrix[0, 0] * matrix[1, 1] - matrix[1, 0] * matrix[0, 1];
+                int determinant = Matrix[0, 0] * Matrix[1, 1] - Matrix[1, 0] * Matrix[0, 1];
                 return determinant;
             }
 
             int result = 0;
 
-            for (int columnIndex = 0; columnIndex < size; ++columnIndex)
+            for (int columnIndex = 0; columnIndex < Size; ++columnIndex)
             {
 
-                result += (columnIndex % 2 == 1 ? 1 : -1) * matrix[1, columnIndex] * GetStepaMatrix(1, columnIndex).FindDeterminant();
+                result += (columnIndex % 2 == 1 ? 1 : -1) * Matrix[1, columnIndex] * GetStepaMatrix(1, columnIndex).FindDeterminant();
             }
 
             return result;
@@ -124,13 +142,13 @@ namespace ConsoleApp5
 
         public SquareMatrix FindTransposed()
         {
-            var result = new SquareMatrix(size);
+            var result = new SquareMatrix(Size);
 
-            for (int rowIndex = 0; rowIndex < size; ++rowIndex)
+            for (int rowIndex = 0; rowIndex < Size; ++rowIndex)
             {
-                for (int columnIndex = 0; columnIndex < size; ++columnIndex)
+                for (int columnIndex = 0; columnIndex < Size; ++columnIndex)
                 {
-                    result.matrix[rowIndex, columnIndex] = matrix[columnIndex, rowIndex];
+                    result.Matrix[rowIndex, columnIndex] = Matrix[columnIndex, rowIndex];
                 }
             }
 
@@ -139,13 +157,13 @@ namespace ConsoleApp5
 
         public void PrintMatrix()
         {
-            for (int RowIndex = 0; RowIndex < matrix.GetLength(0); ++RowIndex)
+            for (int rowIndex = 0; rowIndex < Matrix.GetLength(0); ++rowIndex)
             {
-                for (int ColumnIndex = 0; ColumnIndex < matrix.GetLength(1); ++ColumnIndex)
+                for (int columnIndex = 0; columnIndex < Matrix.GetLength(1); ++columnIndex)
                 {
-                    Console.Write(matrix[RowIndex, ColumnIndex] + " ");
+                    Console.Write(Matrix[rowIndex, columnIndex] + " ");
                 }
-              
+
                 Console.WriteLine();
             }
         }
@@ -171,7 +189,7 @@ namespace ConsoleApp5
                     var result = matrix1 + matrix2;
                     result.PrintMatrix();
                 }
-              
+
                 else if (next != null)
                 {
                     next.handleRequest(request, matrix1, matrix2);
@@ -188,7 +206,7 @@ namespace ConsoleApp5
                     var result = matrix1 * matrix2;
                     result.PrintMatrix();
                 }
-              
+
                 else if (next != null)
                 {
                     next.handleRequest(request, matrix1, matrix2);
@@ -204,7 +222,7 @@ namespace ConsoleApp5
                 {
                     Console.WriteLine(matrix1.FindMatrixTrace());
                 }
-              
+
                 else if (next != null)
                 {
                     next.handleRequest(request, matrix1, matrix2);
@@ -220,7 +238,7 @@ namespace ConsoleApp5
                 {
                     Console.WriteLine(matrix1.FindDeterminant());
                 }
-              
+
                 else if (next != null)
                 {
                     next.handleRequest(request, matrix1, matrix2);
@@ -237,7 +255,24 @@ namespace ConsoleApp5
                     var result = matrix1.FindTransposed();
                     result.PrintMatrix();
                 }
-              
+
+                else if (next != null)
+                {
+                    next.handleRequest(request, matrix1, matrix2);
+                }
+            }
+        }
+
+        public class MatrixDiagonalHandler : Handler
+        {
+            override public void handleRequest(int request, SquareMatrix matrix1, SquareMatrix matrix2)
+            {
+                if (request == 6)
+                {
+                    var result = matrix1.FindDiagonal(matrix1);
+                    result.PrintMatrix();
+                }
+
                 else if (next != null)
                 {
                     next.handleRequest(request, matrix1, matrix2);
@@ -249,11 +284,11 @@ namespace ConsoleApp5
         {
             public override void handleRequest(int request, SquareMatrix matrix1, SquareMatrix matrix2)
             {
-                if (request == 6)
+                if (request == 7)
                 {
                     Environment.Exit(0);
                 }
-              
+
                 else if (next != null)
                 {
                     next.handleRequest(request, matrix1, matrix2);
@@ -291,8 +326,8 @@ namespace ConsoleApp5
                 Console.WriteLine();
 
                 Console.WriteLine("Your options: ");
-                Console.WriteLine("1. +; 2. *; 3. FindDeterminant; 4. FindMatrixTrace; 5. FindTransposed " +
-                                  "\n6. Close this app");
+                Console.WriteLine("1. +; 2. *; 3. Find Determinant; 4. Find Matrix Trace; 5. Find Transposed " +
+                                  "\n6.Find Diagonal Matrix; 7. Close this app");
 
                 while (true)
                 {
@@ -303,13 +338,16 @@ namespace ConsoleApp5
                     Handler matrixTraceHandler = new MatrixTraceHandler();
                     Handler matrixDeterminantHandler = new MatrixDeterminantHandler();
                     Handler matrixTransposedHandler = new MatrixTransposedHandler();
+                    Handler matrixDiagonalHandler = new MatrixDiagonalHandler();
                     Handler closeAppHandler = new CloseAppHandler();
+
 
                     matrixSummHandler.setNext(matrixMultiplicationHandler);
                     matrixMultiplicationHandler.setNext(matrixTraceHandler);
                     matrixTraceHandler.setNext(matrixDeterminantHandler);
                     matrixDeterminantHandler.setNext(matrixTransposedHandler);
-                    matrixTransposedHandler.setNext(closeAppHandler);
+                    matrixTransposedHandler.setNext(matrixDiagonalHandler);
+                    matrixDiagonalHandler.setNext(closeAppHandler);
 
                     matrixSummHandler.handleRequest(userRequest, matrix1, matrix2);
                 }
